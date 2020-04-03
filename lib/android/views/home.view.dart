@@ -1,56 +1,44 @@
 import 'package:contacts/android/views/details.view.dart';
 import 'package:contacts/android/views/editor-contact.view.dart';
+import 'package:contacts/models/contact.model.dart';
+import 'package:contacts/repositories/contact.repository.dart';
 import 'package:flutter/material.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
+  @override
+  _HomeViewState createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  String term = "";
+  bool showSearch = false;
+  final ContactRepository _repository = new ContactRepository();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text("Meus Contatos"),
-        centerTitle: true,
-        leading: FlatButton(
-          onPressed: () {},
-          child: Icon(
-            Icons.search,
-            color: Theme.of(context).primaryColor,
-          ),
-        ),
-      ),
-      body: ListView(
-        children: <Widget>[
-          ListTile(
-            leading: Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(48),
-                image: DecorationImage(
-                  image:
-                      NetworkImage("https://balta.io/imgs/andrebaltieri.jpg"),
-                ),
-              ),
-            ),
-            title: Text("André Baltieri"),
-            subtitle: Text("11 97222-7742"),
-            trailing: FlatButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DetailsView(),
-                  ),
+      appBar: showSearch ? searchAppBar() : appBar(),
+      body: FutureBuilder(
+        future: _repository.search(term),
+        builder: (ctx, snp) {
+          if (snp.hasData) {
+            List<ContactModel> items = snp.data;
+            return ListView.builder(
+              itemCount: items.length,
+              itemBuilder: (ctx, i) {
+                return contactItem(
+                  items[i],
                 );
               },
-              child: Icon(
-                Icons.chat,
-                color: Theme.of(context).primaryColor,
+            );
+          } else {
+            return Container(
+              child: Center(
+                child: CircularProgressIndicator(),
               ),
-            ),
-          ),
-        ],
+            );
+          }
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -65,6 +53,89 @@ class HomeView extends StatelessWidget {
         child: Icon(
           Icons.add,
           color: Theme.of(context).accentColor,
+        ),
+      ),
+    );
+  }
+
+  Widget searchAppBar() {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      title: TextField(
+        onSubmitted: (val) {
+          setState(() {
+            term = val;
+          });
+        },
+      ),
+      centerTitle: true,
+      actions: <Widget>[
+        FlatButton(
+          onPressed: () {
+            setState(() {
+              term = "";
+              showSearch = false;
+            });
+          },
+          child: Icon(
+            Icons.close,
+            color: Theme.of(context).primaryColor,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      title: Text("Meus Contatos"),
+      centerTitle: true,
+      leading: FlatButton(
+        onPressed: () {
+          setState(() {
+            term = "";
+            showSearch = true;
+          });
+        },
+        child: Icon(
+          Icons.search,
+          color: Theme.of(context).primaryColor,
+        ),
+      ),
+    );
+  }
+
+  Widget contactItem(ContactModel model) {
+    return ListTile(
+      leading: Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(48),
+          image: DecorationImage(
+            image: NetworkImage(model.image),
+          ),
+        ),
+      ),
+      title: Text(model.name),
+      subtitle: Text(model.phone),
+      trailing: FlatButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DetailsView(
+                id: model.id,
+              ),
+            ),
+          );
+        },
+        child: Icon(
+          Icons.person,
+          color: Theme.of(context).primaryColor,
         ),
       ),
     );
