@@ -73,6 +73,8 @@ class _EditorContactViewState extends State<EditorContactView> {
           child: Column(
             children: <Widget>[
               TextFormField(
+                textCapitalization: TextCapitalization.words,
+                keyboardType: TextInputType.text,
                 decoration: InputDecoration(
                   labelText: "Nome",
                 ),
@@ -82,6 +84,7 @@ class _EditorContactViewState extends State<EditorContactView> {
                 },
               ),
               TextFormField(
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: "Telefone",
                 ),
@@ -91,6 +94,7 @@ class _EditorContactViewState extends State<EditorContactView> {
                 },
               ),
               TextFormField(
+                keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   labelText: "E-mail",
                 ),
