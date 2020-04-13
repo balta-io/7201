@@ -3,7 +3,7 @@ class ContactModel {
   String name = "";
   String email = "";
   String phone = "";
-  String image = "https://placehold.it/200";
+  String image = "assets/images/profile-picture.png";
   String addressLine1 = "";
   String addressLine2 = "";
   String latLng = "";

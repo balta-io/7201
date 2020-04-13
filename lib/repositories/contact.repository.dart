@@ -143,4 +143,23 @@ class ContactRepository {
       return;
     }
   }
+
+  Future updateImage(int id, String imagePath) async {
+    try {
+      final Database db = await _getDatabase();
+      final model = await getContact(id);
+
+      model.image = imagePath;
+
+      await db.update(
+        TABLE_NAME,
+        model.toMap(),
+        where: "id = ?",
+        whereArgs: [model.id],
+      );
+    } catch (ex) {
+      print(ex);
+      return;
+    }
+  }
 }

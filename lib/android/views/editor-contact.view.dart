@@ -1,10 +1,13 @@
+import 'dart:io';
 import 'package:contacts/android/views/home.view.dart';
 import 'package:contacts/models/contact.model.dart';
 import 'package:contacts/repositories/contact.repository.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 
 class EditorContactView extends StatefulWidget {
-  ContactModel model;
+  final ContactModel model;
 
   EditorContactView({this.model});
 
@@ -13,34 +16,41 @@ class EditorContactView extends StatefulWidget {
 }
 
 class _EditorContactViewState extends State<EditorContactView> {
-  final ContactRepository _repository = new ContactRepository();
+  final _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final _formKey = GlobalKey<FormState>();
 
-  @override
-  void initState() {
-    super.initState();
-    if (widget.model == null) widget.model = new ContactModel();
+  final ContactRepository _repository = ContactRepository();
+
+  onSubmit() {
+    if (!_formKey.currentState.validate()) {
+      return;
+    }
+
+    _formKey.currentState.save();
+
+    if (widget.model.id == 0)
+      create();
+    else
+      update();
   }
 
-  handleSubmit() {
-    if (widget.model.id == null) {
-      widget.model.image = "https://placehold.it/200";
+  create() async {
+    widget.model.id = null;
+    widget.model.image = null;
 
-      _repository.create(widget.model).then((_) {
-        onSuccess();
-      }).catchError((err) {
-        onError(err);
-      }).whenComplete(() {
-        // TODO: Fazer algo legal
-      });
-    } else {
-      _repository.update(widget.model).then((_) {
-        onSuccess();
-      }).catchError((err) {
-        onError(err);
-      }).whenComplete(() {
-        // TODO: Fazer algo legal
-      });
-    }
+    _repository.create(widget.model).then((_) {
+      onSuccess();
+    }).catchError((_) {
+      onError();
+    });
+  }
+
+  update() {
+    _repository.update(widget.model).then((_) {
+      onSuccess();
+    }).catchError((_) {
+      onError();
+    });
   }
 
   onSuccess() {
@@ -52,15 +62,19 @@ class _EditorContactViewState extends State<EditorContactView> {
     );
   }
 
-  onError(err) {
-    print(err);
+  onError() {
+    final snackBar = SnackBar(
+      content: Text('Ops, algo deu errado!'),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
-        title: (widget.model.name == "")
+        title: widget.model.id == 0
             ? Text("Novo Contato")
             : Text("Editar Contato"),
         centerTitle: true,
@@ -70,37 +84,55 @@ class _EditorContactViewState extends State<EditorContactView> {
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
         child: Form(
+          key: _formKey,
           child: Column(
             children: <Widget>[
               TextFormField(
-                textCapitalization: TextCapitalization.words,
-                keyboardType: TextInputType.text,
                 decoration: InputDecoration(
                   labelText: "Nome",
                 ),
+                keyboardType: TextInputType.text,
                 initialValue: widget.model?.name,
                 onChanged: (val) {
                   widget.model.name = val;
                 },
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Nome inválido';
+                  }
+                  return null;
+                },
               ),
               TextFormField(
-                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: "Telefone",
                 ),
+                keyboardType: TextInputType.number,
                 initialValue: widget.model?.phone,
                 onChanged: (val) {
                   widget.model.phone = val;
                 },
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Telefone Inválido';
+                  }
+                  return null;
+                },
               ),
               TextFormField(
-                keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   labelText: "E-mail",
                 ),
+                keyboardType: TextInputType.emailAddress,
                 initialValue: widget.model?.email,
                 onChanged: (val) {
                   widget.model.email = val;
+                },
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'E-mail Inválido';
+                  }
+                  return null;
                 },
               ),
               SizedBox(
@@ -111,7 +143,7 @@ class _EditorContactViewState extends State<EditorContactView> {
                 height: 50,
                 child: FlatButton.icon(
                   color: Theme.of(context).primaryColor,
-                  onPressed: handleSubmit,
+                  onPressed: onSubmit,
                   icon: Icon(
                     Icons.save,
                     color: Theme.of(context).accentColor,

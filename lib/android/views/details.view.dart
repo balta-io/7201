@@ -1,9 +1,14 @@
-import 'package:contacts/android/styles.dart';
+import 'package:camera/camera.dart';
 import 'package:contacts/android/views/address.view.dart';
+import 'package:contacts/android/views/crop-picture.view.dart';
 import 'package:contacts/android/views/editor-contact.view.dart';
 import 'package:contacts/android/views/home.view.dart';
+import 'package:contacts/android/views/loading.view.dart';
+import 'package:contacts/android/views/take-picture.view.dart';
 import 'package:contacts/models/contact.model.dart';
 import 'package:contacts/repositories/contact.repository.dart';
+import 'package:contacts/shared/widgets/contact-details-description.widget.dart';
+import 'package:contacts/shared/widgets/contact-details-image.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -17,9 +22,9 @@ class DetailsView extends StatefulWidget {
 }
 
 class _DetailsViewState extends State<DetailsView> {
-  final ContactRepository _repository = new ContactRepository();
+  final _repository = new ContactRepository();
 
-  handleDelete() {
+  onDelete() {
     showDialog(
       context: context,
       builder: (ctx) {
@@ -35,7 +40,7 @@ class _DetailsViewState extends State<DetailsView> {
             ),
             FlatButton(
               child: Text("Excluir"),
-              onPressed: doDelete,
+              onPressed: delete,
             )
           ],
         );
@@ -43,13 +48,11 @@ class _DetailsViewState extends State<DetailsView> {
     );
   }
 
-  doDelete() {
+  delete() {
     _repository.delete(widget.id).then((_) {
       onSuccess();
     }).catchError((err) {
       onError(err);
-    }).whenComplete(() {
-      // TODO: Fazer algo legal
     });
   }
 
@@ -66,14 +69,49 @@ class _DetailsViewState extends State<DetailsView> {
     print(err);
   }
 
+  takePicture() async {
+    final cameras = await availableCameras();
+    final firstCamera = cameras.first;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TakePictureView(
+          camera: firstCamera,
+        ),
+      ),
+    ).then((imagePath) {
+      cropPicture(imagePath);
+    });
+  }
+
+  cropPicture(path) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CropPictureView(
+          path: path,
+        ),
+      ),
+    ).then((croppedImagePath) {
+      updateImage(path);
+    });
+  }
+
+  updateImage(path) async {
+    _repository.updateImage(widget.id, path).then((_) {
+      setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: _repository.getContact(widget.id),
       builder: (ctx, snp) {
-        ContactModel contact = snp.data;
-
         if (snp.hasData) {
+          ContactModel contact = snp.data;
+
           return Scaffold(
             appBar: AppBar(
               title: Text("Contato"),
@@ -87,48 +125,14 @@ class _DetailsViewState extends State<DetailsView> {
                   height: 10,
                   width: double.infinity,
                 ),
-                Container(
-                  width: 200,
-                  height: 200,
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(200),
-                  ),
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      image: DecorationImage(
-                        image: NetworkImage(contact.image),
-                      ),
-                    ),
-                  ),
-                ),
+                ContactDetailsImage(image: contact.image),
                 SizedBox(
                   height: 10,
                 ),
-                Text(
-                  contact.name,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  contact.phone,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                Text(
-                  contact.email,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
+                ContactDetailsDescription(
+                  name: contact.name,
+                  phone: contact.phone,
+                  email: contact.email,
                 ),
                 SizedBox(
                   height: 20,
@@ -163,7 +167,7 @@ class _DetailsViewState extends State<DetailsView> {
                       ),
                     ),
                     FlatButton(
-                      onPressed: () {},
+                      onPressed: takePicture,
                       color: Theme.of(context).primaryColor,
                       shape: CircleBorder(
                         side: BorderSide.none,
@@ -190,7 +194,7 @@ class _DetailsViewState extends State<DetailsView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        contact.addressLine1 ?? "Nenhum endereço definido",
+                        contact.addressLine1 ?? "Nenhum endereço cadastrado",
                         style: TextStyle(
                           fontSize: 12,
                         ),
@@ -219,20 +223,25 @@ class _DetailsViewState extends State<DetailsView> {
                     ),
                   ),
                 ),
+                SizedBox(
+                  height: 10,
+                ),
                 Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 15,
+                  ),
                   child: Container(
-                    height: 50,
                     width: double.infinity,
+                    height: 50,
+                    color: Color(0xFFFF0000),
                     child: FlatButton(
-                      color: Colors.red,
                       child: Text(
                         "Excluir Contato",
                         style: TextStyle(
-                          color: accentColor,
+                          color: Theme.of(context).accentColor,
                         ),
                       ),
-                      onPressed: handleDelete,
+                      onPressed: onDelete,
                     ),
                   ),
                 ),
@@ -257,13 +266,7 @@ class _DetailsViewState extends State<DetailsView> {
             ),
           );
         } else {
-          return Scaffold(
-            body: Container(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),
-          );
+          return LoadingView();
         }
       },
     );
