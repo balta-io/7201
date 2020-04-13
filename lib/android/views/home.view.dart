@@ -34,10 +34,7 @@ class _HomeViewState extends State<HomeView> {
           itemCount: controller.contacts.length,
           itemBuilder: (ctx, i) {
             return ContactListItem(
-              id: controller.contacts[i].id,
-              image: controller.contacts[i].image,
-              name: controller.contacts[i].name,
-              phone: controller.contacts[i].phone,
+              model: controller.contacts[i],
             );
           },
         ),

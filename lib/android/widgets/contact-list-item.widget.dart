@@ -1,18 +1,13 @@
 import 'dart:io';
 import 'package:contacts/android/views/details.view.dart';
+import 'package:contacts/models/contact.model.dart';
 import 'package:flutter/material.dart';
 
 class ContactListItem extends StatelessWidget {
-  final int id;
-  final String name;
-  final String phone;
-  final String image;
+  final ContactModel model;
 
   ContactListItem({
-    @required this.id,
-    @required this.name,
-    @required this.phone,
-    @required this.image,
+    @required this.model,
   });
 
   @override
@@ -25,23 +20,23 @@ class ContactListItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(48),
           image: DecorationImage(
             fit: BoxFit.cover,
-            image: image == null
+            image: model.image == null
                 ? AssetImage("assets/images/profile-picture.png")
                 : FileImage(
-                    File(image),
+                    File(model.image),
                   ),
           ),
         ),
       ),
-      title: Text(name),
-      subtitle: Text(phone),
+      title: Text(model.name),
+      subtitle: Text(model.phone),
       trailing: FlatButton(
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => DetailsView(
-                id: id,
+                id: model.id,
               ),
             ),
           );

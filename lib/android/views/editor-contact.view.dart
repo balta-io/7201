@@ -1,10 +1,7 @@
-import 'dart:io';
 import 'package:contacts/android/views/home.view.dart';
 import 'package:contacts/models/contact.model.dart';
 import 'package:contacts/repositories/contact.repository.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
 
 class EditorContactView extends StatefulWidget {
   final ContactModel model;
@@ -18,8 +15,7 @@ class EditorContactView extends StatefulWidget {
 class _EditorContactViewState extends State<EditorContactView> {
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
-
-  final ContactRepository _repository = ContactRepository();
+  final _repository = ContactRepository();
 
   onSubmit() {
     if (!_formKey.currentState.validate()) {
