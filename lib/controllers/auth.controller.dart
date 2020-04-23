@@ -1,7 +1,7 @@
 import 'package:local_auth/local_auth.dart';
 
 class AuthController {
-  final LocalAuthentication _auth = LocalAuthentication();
+  final _auth = LocalAuthentication();
 
   Future<bool> authenticate() async {
     if (await _isBiometricAvailable()) {

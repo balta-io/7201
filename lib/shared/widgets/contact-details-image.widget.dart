@@ -1,11 +1,14 @@
 import 'dart:io';
+
 import 'package:contacts/shared/styles.dart';
 import 'package:flutter/widgets.dart';
 
 class ContactDetailsImage extends StatelessWidget {
   final String image;
 
-  ContactDetailsImage({@required this.image});
+  ContactDetailsImage({
+    @required this.image,
+  });
 
   @override
   Widget build(BuildContext context) {

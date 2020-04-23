@@ -1,6 +1,6 @@
-import 'package:contacts/controllers/auth.controoler.dart';
 import 'package:contacts/android/views/home.view.dart';
 import 'package:flutter/material.dart';
+import 'package:contacts/controllers/auth.controller.dart';
 
 class SplashView extends StatefulWidget {
   @override
@@ -13,12 +13,16 @@ class _SplashViewState extends State<SplashView> {
   @override
   void initState() {
     super.initState();
-    controller.authenticate().then((_) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => HomeView(),
-        ),
-      );
+    controller.authenticate().then((result) {
+      if (result) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => HomeView(),
+          ),
+        );
+      } else {
+        // TODO:
+      }
     }).catchError((error) {
       print(error);
     });

@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_crop/image_crop.dart';
 import 'package:path/path.dart';
@@ -31,6 +32,7 @@ class _CropPictureViewState extends State<CropPictureView> {
         file: File(widget.path),
         area: cropKey.currentState.area,
       );
+
       final bytes = await croppedFile.readAsBytes();
       final buffer = bytes.buffer;
 

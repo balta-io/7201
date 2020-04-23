@@ -14,7 +14,7 @@ class EditorContactView extends StatefulWidget {
 
 class _EditorContactViewState extends State<EditorContactView> {
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
-  final _formKey = GlobalKey<FormState>();
+  final _formKey = new GlobalKey<FormState>();
   final _repository = ContactRepository();
 
   onSubmit() {
@@ -30,7 +30,7 @@ class _EditorContactViewState extends State<EditorContactView> {
       update();
   }
 
-  create() async {
+  create() {
     widget.model.id = null;
     widget.model.image = null;
 
@@ -88,6 +88,7 @@ class _EditorContactViewState extends State<EditorContactView> {
                   labelText: "Nome",
                 ),
                 keyboardType: TextInputType.text,
+                textCapitalization: TextCapitalization.words,
                 initialValue: widget.model?.name,
                 onChanged: (val) {
                   widget.model.name = val;
@@ -110,7 +111,7 @@ class _EditorContactViewState extends State<EditorContactView> {
                 },
                 validator: (value) {
                   if (value.isEmpty) {
-                    return 'Telefone Inválido';
+                    return 'Telefone inválido';
                   }
                   return null;
                 },
@@ -126,7 +127,7 @@ class _EditorContactViewState extends State<EditorContactView> {
                 },
                 validator: (value) {
                   if (value.isEmpty) {
-                    return 'E-mail Inválido';
+                    return 'E-mail inválido';
                   }
                   return null;
                 },

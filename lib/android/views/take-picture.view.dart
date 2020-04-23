@@ -37,17 +37,6 @@ class _TakePictureViewState extends State<TakePictureView> {
     super.dispose();
   }
 
-  loadCameras() async {
-    final cameras = await availableCameras();
-
-    _controller = CameraController(
-      cameras.first,
-      ResolutionPreset.medium,
-    );
-
-    _initializeControllerFuture = _controller.initialize();
-  }
-
   Future<String> takePhoto() async {
     try {
       await _initializeControllerFuture;
@@ -61,8 +50,8 @@ class _TakePictureViewState extends State<TakePictureView> {
 
       await _controller.takePicture(path);
       return path;
-    } catch (e) {
-      print(e);
+    } catch (ex) {
+      print(ex);
       return "";
     }
   }
@@ -82,7 +71,9 @@ class _TakePictureViewState extends State<TakePictureView> {
           if (snapshot.connectionState == ConnectionState.done) {
             return CameraPreview(_controller);
           } else {
-            return Center(child: CircularProgressIndicator());
+            return Center(
+              child: CircularProgressIndicator(),
+            );
           }
         },
       ),

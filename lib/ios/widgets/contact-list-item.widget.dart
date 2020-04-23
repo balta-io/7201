@@ -15,7 +15,7 @@ class ContactListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
+      children: [
         Container(
           width: 48,
           height: 48,
@@ -37,7 +37,7 @@ class ContactListItem extends StatelessWidget {
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
+              children: [
                 Text(
                   model.name,
                   style: TextStyle(

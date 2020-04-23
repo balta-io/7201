@@ -13,7 +13,7 @@ class EditorContactView extends StatefulWidget {
 }
 
 class _EditorContactViewState extends State<EditorContactView> {
-  final _formKey = GlobalKey<FormState>();
+  final _formKey = new GlobalKey<FormState>();
   final _repository = ContactRepository();
 
   onSubmit() {
@@ -29,7 +29,7 @@ class _EditorContactViewState extends State<EditorContactView> {
       update();
   }
 
-  create() async {
+  create() {
     widget.model.id = null;
     widget.model.image = null;
 

@@ -1,5 +1,6 @@
+import 'package:contacts/android/views/details.view.dart';
 import 'package:contacts/android/views/editor-contact.view.dart';
-import 'package:contacts/android/widgets/contact-list-item.widget.dart';
+import 'package:contacts/android/widgets/contact-list-item.view.dart';
 import 'package:contacts/android/widgets/search-appbar.widget.dart';
 import 'package:contacts/controllers/home.controller.dart';
 import 'package:contacts/models/contact.model.dart';
@@ -45,7 +46,7 @@ class _HomeViewState extends State<HomeView> {
             context,
             MaterialPageRoute(
               builder: (context) => EditorContactView(
-                model: new ContactModel(
+                model: ContactModel(
                   id: 0,
                 ),
               ),

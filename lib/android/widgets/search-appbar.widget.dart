@@ -25,7 +25,7 @@ class SearchAppBar extends StatelessWidget {
                   controller.search(val);
                 },
               )
-            : Text("Meus Contatos"),
+            : Text("Meus Contato"),
       ),
       centerTitle: true,
       leading: FlatButton(

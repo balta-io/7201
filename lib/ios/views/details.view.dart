@@ -1,5 +1,4 @@
 import 'package:contacts/ios/views/address.view.dart';
-import 'package:contacts/ios/styles.dart';
 import 'package:contacts/ios/views/editor-contact.view.dart';
 import 'package:contacts/ios/views/home.view.dart';
 import 'package:contacts/ios/views/loading.view.dart';
@@ -77,7 +76,7 @@ class _DetailsViewState extends State<DetailsView> {
 
           return CupertinoPageScaffold(
             child: CustomScrollView(
-              slivers: <Widget>[
+              slivers: [
                 CupertinoSliverNavigationBar(
                   largeTitle: Text("Contato"),
                   trailing: GestureDetector(
@@ -98,12 +97,12 @@ class _DetailsViewState extends State<DetailsView> {
                 ),
                 SliverFillRemaining(
                   child: Column(
-                    children: <Widget>[
+                    children: [
                       SizedBox(
                         height: 10,
                         width: double.infinity,
                       ),
-                      ContactDetailsImage(image: null),
+                      ContactDetailsImage(image: contact.image),
                       SizedBox(
                         height: 10,
                       ),

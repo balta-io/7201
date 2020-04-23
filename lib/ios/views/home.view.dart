@@ -1,8 +1,7 @@
 import 'package:contacts/controllers/home.controller.dart';
-import 'package:contacts/ios/styles.dart';
-import 'package:contacts/ios/views/details.view.dart';
+import 'package:contacts/ios/views/editor-contact.view.dart';
 import 'package:contacts/ios/widgets/contact-list-item.widget.dart';
-import 'package:contacts/ios/widgets/search-appbar.widget.dart';
+import 'package:contacts/models/contact.model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
@@ -23,9 +22,7 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: SearchAppBar(
-        controller: controller,
-      ),
+      navigationBar: searchAppBar(controller),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Observer(
@@ -38,6 +35,52 @@ class _HomeViewState extends State<HomeView> {
             },
           ),
         ),
+      ),
+    );
+  }
+
+  Widget searchAppBar(controller) {
+    return CupertinoNavigationBar(
+      middle: Observer(
+        builder: (_) => controller.showSearch
+            ? CupertinoTextField(
+                autofocus: true,
+                placeholder: "Pesquisar...",
+                onSubmitted: (val) {
+                  controller.search(val);
+                },
+              )
+            : Text("Meus Contatos"),
+      ),
+      leading: GestureDetector(
+        onTap: () {
+          if (controller.showSearch) controller.search("");
+          controller.toggleSearch();
+        },
+        child: Observer(
+          builder: (_) => Icon(
+            controller.showSearch
+                ? CupertinoIcons.clear
+                : CupertinoIcons.search,
+          ),
+        ),
+      ),
+      trailing: GestureDetector(
+        child: Icon(
+          CupertinoIcons.add,
+        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            CupertinoPageRoute(
+              builder: (context) => EditorContactView(
+                model: ContactModel(
+                  id: 0,
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
